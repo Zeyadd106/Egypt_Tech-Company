@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, MessageSquareText } from 'lucide-react'
 import type { Product } from '../types/product'
 import { fmt } from '../i18n/translations'
+import { categoryLabel } from '../data/catalog'
 import { useLang } from '../i18n/LanguageContext'
 
 interface ProductCardProps {
@@ -10,7 +11,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const navigate = useNavigate()
   const images = [product.image_url, ...(product.gallery ?? [])].filter(Boolean)
   const mainImage = images[0] ?? '/placeholder-product.svg'
@@ -44,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           }}
         />
         <span className="absolute start-3 top-3 rounded-full bg-[#20265e]/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-          {product.category}
+          {categoryLabel(product.category, lang)}
         </span>
       </Link>
 

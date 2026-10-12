@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import { demoProducts } from '../data/demoProducts'
+import { productMatchesCategory } from '../data/catalog'
 import type { Product, ProductFilters } from '../types/product'
 
 function sortProducts(products: Product[], sort: ProductFilters['sort']): Product[] {
@@ -23,11 +24,14 @@ function applyLocalFilters(products: Product[], filters: ProductFilters = {}): P
   const q = (filters.search ?? '').trim().toLowerCase()
   let list = products
   if (filters.category && filters.category !== 'All') {
-    list = list.filter((p) => p.category === filters.category)
+    list = list.filter((p) => productMatchesCategory(p, filters.category))
+  }
+  if (filters.subcategory && filters.subcategory !== 'All') {
+    list = list.filter((p) => productMatchesCategory(p, filters.subcategory))
   }
   if (q) {
     list = list.filter((p) =>
-      [p.name, p.short_description, p.description, p.category]
+      [p.name, p.short_description, p.description, p.category, p.subcategory]
         .join(' ')
         .toLowerCase()
         .includes(q),
@@ -47,6 +51,7 @@ function normalizeRow(row: Record<string, unknown>): Product {
     name: String(row.name ?? ''),
     slug: String(row.slug ?? ''),
     category: String(row.category ?? 'General'),
+    subcategory: row.subcategory ? String(row.subcategory) : undefined,
     short_description: String(row.short_description ?? ''),
     description: String(row.description ?? ''),
     image_url: String(row.image_url ?? ''),
@@ -65,27 +70,17 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
     return applyLocalFilters(demoProducts, filters)
   }
   try {
-    let query = supabase
+    const { data, error } = await supabase
       .from('products')
       .select('*')
       .order('display_order', { ascending: true })
-
-    if (filters.category && filters.category !== 'All') {
-      query = query.eq('category', filters.category)
-    }
-    if (filters.search?.trim()) {
-      const q = filters.search.trim()
-      query = query.or(
-        `name.ilike.%${q}%,short_description.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`,
-      )
-    }
-
-    const { data, error } = await query
     if (error) throw error
     const products = (data ?? []).map((r) =>
       normalizeRow(r as Record<string, unknown>),
     )
-    return sortProducts(products, filters.sort ?? 'featured')
+    // Category/subcategory filtering is hierarchical, so it is applied
+    // locally against the catalog tree after fetching the (small) catalog.
+    return applyLocalFilters(products, filters)
   } catch {
     // Never break the brochure on backend errors — fall back to demo data.
     return applyLocalFilters(demoProducts, filters)

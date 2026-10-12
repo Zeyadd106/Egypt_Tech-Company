@@ -5,6 +5,7 @@ import SectionTitle from '../components/SectionTitle'
 import AboutBanner from '../components/AboutBanner'
 import PageCrumbs from '../components/PageCrumbs'
 import WhyChooseUs from '../components/WhyChooseUs'
+import ProductMarquee from '../components/ProductMarquee'
 import Seo from '../components/Seo'
 import { WavesDecoration, Zigzag } from '../components/Decorations'
 import { useLang } from '../i18n/LanguageContext'
@@ -115,6 +116,8 @@ export default function About() {
           </Reveal>
         </div>
       </section>
+
+      <ProductMarquee />
 
       <WhyChooseUs />
     </>

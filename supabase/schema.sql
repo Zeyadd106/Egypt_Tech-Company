@@ -9,6 +9,7 @@ create table if not exists public.products (
   name text not null,
   slug text not null unique,
   category text not null default 'General',
+  subcategory text,
   short_description text not null default '',
   description text not null default '',
   image_url text not null default '',
@@ -20,7 +21,11 @@ create table if not exists public.products (
   updated_at timestamptz not null default now()
 );
 
+-- Existing projects: add the subcategory column if it is missing.
+alter table public.products add column if not exists subcategory text;
+
 create index if not exists products_category_idx on public.products (category);
+create index if not exists products_subcategory_idx on public.products (subcategory);
 create index if not exists products_featured_idx on public.products (featured);
 create index if not exists products_display_order_idx on public.products (display_order);
 create index if not exists products_slug_idx on public.products (slug);

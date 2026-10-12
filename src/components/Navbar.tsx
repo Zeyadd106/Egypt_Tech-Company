@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Languages, Menu, X } from 'lucide-react'
+import { ChevronDown, Languages, Menu, X } from 'lucide-react'
 import { useLang } from '../i18n/LanguageContext'
+import { categoryTree } from '../data/catalog'
+import ProductsMenu from './ProductsMenu'
+import CategoryAccordion from './CategoryAccordion'
 
 /** White corporate header with logo + menu + EN/AR language switcher. */
 export default function Navbar() {
   const { t, lang, toggle } = useLang()
   const [open, setOpen] = useState(false)
+  const [mobileProducts, setMobileProducts] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   const links = [
     { to: '/', label: t.nav.home },
     { to: '/about', label: t.nav.about },
-    { to: '/products', label: t.nav.products },
   ]
 
   useEffect(() => {
@@ -23,7 +26,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const closeMenu = () => setOpen(false)
+  const closeMenu = () => {
+    setOpen(false)
+    setMobileProducts(false)
+  }
 
   const langButton = (
     <button
@@ -84,6 +90,7 @@ export default function Navbar() {
               )}
             </NavLink>
           ))}
+          <ProductsMenu />
           <Link
             to="/contact"
             className="ms-3 rounded-lg bg-[#20265e] px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#2f3788]"
@@ -133,6 +140,40 @@ export default function Navbar() {
                   {l.label}
                 </NavLink>
               ))}
+
+              {/* Products — expandable category tree */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setMobileProducts((v) => !v)}
+                  aria-expanded={mobileProducts}
+                  className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-bold uppercase tracking-wide text-slate-700 transition-colors hover:bg-slate-100"
+                >
+                  {t.nav.products}
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      mobileProducts ? 'rotate-180' : ''
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {mobileProducts && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="py-1 ps-2">
+                        <CategoryAccordion nodes={categoryTree} onNavigate={closeMenu} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <Link
                 to="/contact"
                 onClick={closeMenu}

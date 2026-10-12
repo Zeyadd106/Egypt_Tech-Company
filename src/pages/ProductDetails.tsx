@@ -7,10 +7,11 @@ import Seo from '../components/Seo'
 import { ErrorState, LoadingState } from '../components/States'
 import { useProduct } from '../hooks/useProducts'
 import { fmt } from '../i18n/translations'
+import { categoryLabel } from '../data/catalog'
 import { useLang } from '../i18n/LanguageContext'
 
 export default function ProductDetails() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { product, loading, error } = useProduct(slug)
@@ -41,6 +42,12 @@ export default function ProductDetails() {
   }
 
   const images = [product.image_url, ...(product.gallery ?? [])].filter(Boolean)
+  const categoryText = [
+    categoryLabel(product.category, lang),
+    product.subcategory ? categoryLabel(product.subcategory, lang) : '',
+  ]
+    .filter(Boolean)
+    .join(' › ')
 
   return (
     <>
@@ -65,7 +72,7 @@ export default function ProductDetails() {
 
           <div>
             <span className="inline-block rounded-full bg-[#20265e] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white">
-              {product.category}
+              {categoryText}
             </span>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
               {product.name}
@@ -95,7 +102,7 @@ export default function ProductDetails() {
             <dl className="mt-7 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
               <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3">
                 <dt className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t.detail.category}</dt>
-                <dd className="mt-1 break-words text-sm font-bold text-slate-900">{product.category}</dd>
+                <dd className="mt-1 break-words text-sm font-bold text-slate-900">{categoryText}</dd>
               </div>
               <div className="min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3">
                 <dt className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t.detail.reference}</dt>

@@ -11,6 +11,7 @@ import Seo from '../components/Seo'
 import { ErrorState } from '../components/States'
 import { useDebouncedValue, useProducts } from '../hooks/useProducts'
 import { getProducts } from '../services/productService'
+import { buildCategoryTree, categoryLabel, getProductCategoryIds } from '../data/catalog'
 import { fmt } from '../i18n/translations'
 import { useLang } from '../i18n/LanguageContext'
 
@@ -19,7 +20,7 @@ export type SortOption = 'featured' | 'name-asc' | 'name-desc' | 'newest'
 const PAGE_SIZE = 9
 
 export default function Products() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [params, setParams] = useSearchParams()
   const initialCategory = params.get('category') ?? 'All'
 
@@ -46,7 +47,9 @@ export default function Products() {
       .then((all) => {
         if (cancelled) return
         const c: Record<string, number> = {}
-        for (const p of all) c[p.category] = (c[p.category] ?? 0) + 1
+        for (const p of all) {
+          for (const id of getProductCategoryIds(p)) c[id] = (c[id] ?? 0) + 1
+        }
         setCounts(c)
         setTotalAll(all.length)
       })
@@ -115,7 +118,7 @@ export default function Products() {
             role="group"
             aria-label="Filter by category"
           >
-            {['All', ...categories].map((c) => (
+            {['All', ...buildCategoryTree(categories).map((n) => n.id)].map((c) => (
               <button
                 key={c}
                 type="button"
@@ -127,7 +130,7 @@ export default function Products() {
                     : 'border-slate-300 bg-white text-slate-700'
                 }`}
               >
-                {c === 'All' ? t.products.all : c}
+                {c === 'All' ? t.products.all : categoryLabel(c, lang)}
               </button>
             ))}
           </div>

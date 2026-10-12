@@ -31,28 +31,15 @@ export const officeLocation = {
 
 /**
  * Homepage hero slider media. Slide TEXT lives in translations.ts
- * (t.hero.slides) in matching order. PLACEHOLDER imagery.
+ * (t.hero.slides) in matching order. These are the client-provided
+ * product photos (transparent cutouts) stored in public/hero/.
+ * The slider showcases them in a rotating product display.
  */
-export const heroSlideMedia = [
-  {
-    image:
-      'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=1600&q=70',
-    fallback: 'https://picsum.photos/seed/egypttech-hero-1/1600/700',
-    link: '/products',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=70',
-    fallback: 'https://picsum.photos/seed/egypttech-hero-2/1600/700',
-    link: '/products',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=70',
-    fallback: 'https://picsum.photos/seed/egypttech-hero-3/1600/700',
-    link: '/contact',
-  },
-]
+export const heroSlideMedia = Array.from({ length: 15 }, (_, i) => ({
+  image: `/hero/hero-${i + 1}.${i === 14 ? 'jpeg' : 'png'}`,
+  fallback: '/hero/hero-1.png',
+  link: '/products',
+}))
 
 /** Homepage About section media. TEXT lives in translations.ts (t.homeAbout). */
 export const homeAboutMedia = {
@@ -63,28 +50,13 @@ export const homeAboutMedia = {
 }
 
 /**
- * About page slanted photo banner. ALT TEXT lives in translations.ts
- * (t.about.bannerAlts). PLACEHOLDER imagery.
+ * Page slanted photo banner (About, Products, Contact).
+ * Uses the client's product photos from public/hero/.
  */
 export const aboutBannerMedia: { src: string; fallback: string }[] = [
-  {
-    src: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&q=60',
-    fallback: 'https://picsum.photos/seed/egypttech-about-1/600/400',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=60',
-    fallback: 'https://picsum.photos/seed/egypttech-about-2/600/400',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=60',
-    fallback: 'https://picsum.photos/seed/egypttech-about-3/600/400',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=600&q=60',
-    fallback: 'https://picsum.photos/seed/egypttech-about-4/600/400',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=600&q=60',
-    fallback: 'https://picsum.photos/seed/egypttech-about-5/600/400',
-  },
+  { src: '/hero/hero-1.png', fallback: '/hero/hero-1.png' },
+  { src: '/hero/hero-4.png', fallback: '/hero/hero-1.png' },
+  { src: '/hero/hero-7.png', fallback: '/hero/hero-1.png' },
+  { src: '/hero/hero-10.png', fallback: '/hero/hero-1.png' },
+  { src: '/hero/hero-13.png', fallback: '/hero/hero-1.png' },
 ]

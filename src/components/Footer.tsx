@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { siteConfig } from '../data/site'
+import { categoryTree, categoryLabel } from '../data/catalog'
 import { useLang } from '../i18n/LanguageContext'
 
 export default function Footer() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const year = new Date().getFullYear()
   return (
     <footer className="bg-[#20265e] text-slate-300">
@@ -58,13 +59,13 @@ export default function Footer() {
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-white">{t.footer.categories}</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            {['Air Compressors', 'Air Treatment', 'Spare Parts', 'Hydraulic Systems'].map((c) => (
-              <li key={c}>
+            {categoryTree.map((c) => (
+              <li key={c.id}>
                 <Link
-                  to={`/products?category=${encodeURIComponent(c)}`}
+                  to={`/products?category=${encodeURIComponent(c.id)}`}
                   className="text-slate-400 transition-colors hover:text-amber-400"
                 >
-                  {c}
+                  {categoryLabel(c.id, lang)}
                 </Link>
               </li>
             ))}
